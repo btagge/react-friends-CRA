@@ -1,5 +1,6 @@
 import React from 'react';
 import FriendView from './friend';
+import Friends from './friends';
 
 class FriendsList extends React.Component {
   constructor(props) {
@@ -16,8 +17,24 @@ class FriendsList extends React.Component {
 	}
 
   render() {
+        const friendsList = Friends
+	        .filter( friend => friend.name.toLowerCase().indexOf( this.state.searchText.toLowerCase() ) !== -1 )
+	        .sort( ( a, b ) => a[ this.state.orderBy ] > b[ this.state.orderBy ] )
+	        .map( friend => (
+		        <FriendView
+			        currentLocation={ friend.current_location || {} }
+			        friendCount={ friend.friend_count }
+			        key={ friend.$$hashKey }
+			        name={ friend.name }
+			        pictureUrl={ friend.pic_square }
+			        status={ friend.status ? friend.status.message : "" }
+		        />
+	        ) );
+
+const displayFriends = this.state.order === "ascending" ? friendsList : friendsList.slice().reverse();
+
     return (
-        <div>
+        <div className="main-scroll">
 	        <form className="form-inline searchForm" role="form">
 		        <div className="form-group">
 
@@ -27,7 +44,7 @@ class FriendsList extends React.Component {
                         placeholder="Search For Friends" 
                         value={this.state.searchText}
                     />
-
+                    <br/>
                     <select 
                         className="input-medium" 
                         value={this.state.orderBy}
@@ -36,7 +53,7 @@ class FriendsList extends React.Component {
                         <option value="name">Name</option>
 						<option value="friend_count"># of Friends</option>
                     </select>
-
+                    
                     <select 
                         className="input-medium" 
                         value={this.state.order}
@@ -50,7 +67,7 @@ class FriendsList extends React.Component {
 	        </form>
 
 	        <ul>
-                <FriendView/>
+                { friendsList }
 	        </ul>
         </div>
     );
